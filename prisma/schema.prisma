@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  password    String
+  course      String
+  institution String
+  semester    String
+  createdAt   DateTime      @default(now())
+  records     DailyRecord[]
+}
+
+model DailyRecord {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         String
+  sleepHours   Float
+  sleepQuality Int
+  screenTime   Float
+  studyTime    Float
+  leisureTime  Float
+  mood         Int
+  tiredness    Int
+  stress       Int
+  notes        String   @default("")
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, date])
+}
