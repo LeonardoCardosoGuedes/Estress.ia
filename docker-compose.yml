@@ -30,5 +30,15 @@ services:
       postgres:
         condition: service_healthy
 
+  ml_service:
+    build:
+      context: ./ml_service
+    container_name: stressia_ml_service
+    restart: unless-stopped
+    environment:
+      MODEL_PATH: /app/ml_service/model_pipeline.joblib
+    ports:
+      - "8001:8001"
+
 volumes:
   postgres_data:

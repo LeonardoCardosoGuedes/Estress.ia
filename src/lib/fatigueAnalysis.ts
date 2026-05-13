@@ -5,65 +5,48 @@ export function analyzeFatigue(records: DailyRecord[]): FatigueAnalysis {
     return { score: 0, level: "low", factors: [], recommendations: [] };
   }
 
-  const recent = records.slice(0, 7); // últimos 7 dias
+  const recent = records.slice(0, 7);
   const latest = recent[0];
   const factors: string[] = [];
   let score = 0;
 
-  // Sono
   const avgSleep = avg(recent.map((r) => r.sleepHours));
-  if (avgSleep < 5) { score += 20; factors.push("Sono muito insuficiente (média < 5h)"); }
-  else if (avgSleep < 6) { score += 12; factors.push("Sono insuficiente (média < 6h)"); }
+  if (avgSleep < 5) { score += 20; factors.push("Sono muito insuficiente (media < 5h)"); }
+  else if (avgSleep < 6) { score += 12; factors.push("Sono insuficiente (media < 6h)"); }
   else if (avgSleep < 7) { score += 5; }
 
-  // Qualidade do sono
   const avgSleepQuality = avg(recent.map((r) => r.sleepQuality));
-  if (avgSleepQuality <= 2) { score += 15; factors.push("Qualidade do sono muito baixa"); }
-  else if (avgSleepQuality <= 3) { score += 7; factors.push("Qualidade do sono abaixo do ideal"); }
+  if (avgSleepQuality <= 4) { score += 15; factors.push("Qualidade do sono muito baixa"); }
+  else if (avgSleepQuality <= 6) { score += 7; factors.push("Qualidade do sono abaixo do ideal"); }
 
-  // Tempo de tela
   const avgScreen = avg(recent.map((r) => r.screenTime));
-  if (avgScreen >= 10) { score += 12; factors.push("Tempo de tela excessivo (≥ 10h/dia)"); }
+  if (avgScreen >= 10) { score += 12; factors.push("Tempo de tela excessivo (>= 10h/dia)"); }
   else if (avgScreen >= 8) { score += 6; factors.push("Tempo de tela elevado"); }
 
-  // Tempo de estudo
-  const avgStudy = avg(recent.map((r) => r.studyTime));
-  if (avgStudy >= 10) { score += 12; factors.push("Carga de estudo muito alta (≥ 10h/dia)"); }
-  else if (avgStudy >= 8) { score += 6; factors.push("Carga de estudo elevada"); }
+  const avgSocial = avg(recent.map((r) => r.socialMediaHours));
+  if (avgSocial >= 5) { score += 10; factors.push("Uso alto de redes sociais"); }
+  else if (avgSocial >= 3) { score += 5; factors.push("Uso moderado de redes sociais"); }
 
-  // Lazer
-  const avgLeisure = avg(recent.map((r) => r.leisureTime));
-  if (avgLeisure === 0) { score += 15; factors.push("Nenhum tempo de lazer registrado"); }
-  else if (avgLeisure < 1) { score += 8; factors.push("Tempo de lazer insuficiente"); }
+  const avgGaming = avg(recent.map((r) => r.gamingHours));
+  if (avgGaming >= 5) { score += 8; factors.push("Tempo de jogos elevado"); }
 
-  // Humor
-  const avgMood = avg(recent.map((r) => r.mood));
-  if (avgMood <= 2) { score += 12; factors.push("Humor consistentemente baixo"); }
-  else if (avgMood <= 3) { score += 5; factors.push("Humor abaixo do ideal"); }
+  const avgCaffeine = avg(recent.map((r) => r.caffeineIntakeMgPerDay));
+  if (avgCaffeine >= 400) { score += 10; factors.push("Consumo de cafeina elevado"); }
+  else if (avgCaffeine >= 250) { score += 5; factors.push("Consumo de cafeina acima do ideal"); }
 
-  // Cansaço
-  const avgTiredness = avg(recent.map((r) => r.tiredness));
-  if (avgTiredness >= 5) { score += 12; factors.push("Nível de cansaço crítico"); }
-  else if (avgTiredness >= 4) { score += 7; factors.push("Nível de cansaço elevado"); }
-
-  // Estresse
   const avgStress = avg(recent.map((r) => r.stress));
-  if (avgStress >= 5) { score += 12; factors.push("Nível de estresse crítico"); }
-  else if (avgStress >= 4) { score += 7; factors.push("Nível de estresse elevado"); }
+  if (avgStress >= 8) { score += 12; factors.push("Nivel de estresse previsto critico"); }
+  else if (avgStress >= 6) { score += 7; factors.push("Nivel de estresse previsto elevado"); }
 
-  // Padrões repetitivos negativos (últimos 3 dias)
   const last3 = recent.slice(0, 3);
   if (last3.length === 3) {
     const sleepBelow6 = last3.filter((r) => r.sleepHours < 6).length;
     if (sleepBelow6 === 3) { score += 10; factors.push("3 dias seguidos com sono < 6h"); }
 
-    const stressAbove4 = last3.filter((r) => r.stress >= 4).length;
-    if (stressAbove4 >= 2) { score += 8; factors.push("Estresse alto por 2+ dias consecutivos"); }
+    const highStress = last3.filter((r) => r.stress >= 7).length;
+    if (highStress >= 2) { score += 8; factors.push("Estresse alto por 2+ dias consecutivos"); }
 
-    const noLeisure = last3.filter((r) => r.leisureTime === 0).length;
-    if (noLeisure >= 2) { score += 8; factors.push("Sem lazer por 2+ dias consecutivos"); }
-
-    const highScreen = last3.filter((r) => r.screenTime >= 8 && r.sleepQuality <= 2).length;
+    const highScreen = last3.filter((r) => r.screenTime >= 8 && r.sleepQuality <= 4).length;
     if (highScreen >= 2) { score += 8; factors.push("Tela alta + sono ruim combinados"); }
   }
 
@@ -73,7 +56,16 @@ export function analyzeFatigue(records: DailyRecord[]): FatigueAnalysis {
     score: cappedScore,
     level: classifyRisk(cappedScore),
     factors,
-    recommendations: generateRecommendations(cappedScore, factors, latest, avgSleep, avgStress, avgScreen, avgStudy, avgLeisure, avgMood),
+    recommendations: generateRecommendations(
+      cappedScore,
+      latest,
+      avgSleep,
+      avgStress,
+      avgScreen,
+      avgSocial,
+      avgGaming,
+      avgCaffeine
+    ),
   };
 }
 
@@ -91,40 +83,39 @@ function classifyRisk(score: number): RiskLevel {
 
 function generateRecommendations(
   score: number,
-  factors: string[],
   latest: DailyRecord,
   avgSleep: number,
   avgStress: number,
   avgScreen: number,
-  avgStudy: number,
-  avgLeisure: number,
-  avgMood: number
+  avgSocial: number,
+  avgGaming: number,
+  avgCaffeine: number
 ): string[] {
   const recs: string[] = [];
 
   if (avgSleep < 7) {
-    recs.push("Você teve pouco tempo de descanso nos últimos dias. Considere reduzir o tempo de tela antes de dormir.");
+    recs.push("Voce teve pouco tempo de descanso nos ultimos dias. Considere reduzir o tempo de tela antes de dormir.");
   }
   if (avgScreen >= 8) {
-    recs.push("Seu tempo de tela está elevado. Pausas de 5 minutos a cada hora podem ajudar a reduzir a fadiga visual.");
+    recs.push("Seu tempo de tela esta elevado. Pausas de 5 minutos a cada hora podem ajudar a reduzir a fadiga visual.");
   }
-  if (avgStudy >= 8 && avgLeisure < 1) {
-    recs.push("Seu tempo de estudo está alto e o lazer está baixo. Tente inserir pequenas pausas e atividades de descanso durante o dia.");
+  if (avgSocial >= 3) {
+    recs.push("Seu tempo em redes sociais esta relevante. Experimente definir blocos sem notificacoes ao longo do dia.");
   }
-  if (avgStress >= 4) {
-    recs.push("Seu nível de estresse subiu nos últimos registros. Uma pausa curta ou exercício leve pode ajudar a recuperar o foco.");
+  if (avgGaming >= 5) {
+    recs.push("O tempo de jogos esta alto. Vale alternar com pausas longe da tela para reduzir sobrecarga digital.");
   }
-  if (avgMood <= 2) {
-    recs.push("Padrão de atenção: seu humor está baixo recentemente. Considere uma conversa com alguém de confiança ou uma atividade que você goste.");
+  if (avgCaffeine >= 250 && latest.sleepHours < 7) {
+    recs.push("Cafeina alta combinada com pouco sono pode piorar descanso e ansiedade. Tente evitar cafeina no fim do dia.");
   }
-  if (avgLeisure === 0) {
-    recs.push("Possível sobrecarga: nenhum tempo de lazer registrado. Reserve pelo menos 30 minutos diários para descanso sem telas.");
+  if (avgStress >= 6) {
+    recs.push("O modelo indicou estresse elevado nos ultimos registros. Uma pausa curta ou exercicio leve pode ajudar a recuperar o foco.");
   }
   if (score <= 30) {
-    recs.push("Seus indicadores estão equilibrados. Continue mantendo essa rotina saudável!");
+    recs.push("Seus indicadores estao equilibrados. Continue mantendo essa rotina saudavel!");
   }
   if (score >= 81) {
-    recs.push("Recomenda-se observar seus sinais de fadiga com atenção. Considere reorganizar sua rotina e buscar apoio se necessário.");
+    recs.push("Recomenda-se observar seus sinais de fadiga com atencao. Considere reorganizar sua rotina e buscar apoio se necessario.");
   }
 
   return recs.length > 0 ? recs : ["Continue registrando sua rotina para receber insights personalizados."];
@@ -135,32 +126,22 @@ export function detectAlerts(records: DailyRecord[]): string[] {
   if (records.length < 2) return alerts;
 
   const recent = records.slice(0, 7);
-
-  // Sono < 6h por 3 dias seguidos
   const last3 = recent.slice(0, 3);
   if (last3.length === 3 && last3.every((r) => r.sleepHours < 6)) {
-    alerts.push("Sono abaixo de 6 horas por 3 dias seguidos — sinais de fadiga acumulada.");
+    alerts.push("Sono abaixo de 6 horas por 3 dias seguidos.");
   }
 
-  // Estresse >= 4 por 2 dias seguidos
   const last2 = recent.slice(0, 2);
-  if (last2.length === 2 && last2.every((r) => r.stress >= 4)) {
-    alerts.push("Estresse elevado (≥ 4) por 2 dias consecutivos — padrão de atenção.");
+  if (last2.length === 2 && last2.every((r) => r.stress >= 7)) {
+    alerts.push("Estresse previsto elevado por 2 dias consecutivos.");
   }
 
-  // Sem lazer por 2+ dias
-  if (last2.length === 2 && last2.every((r) => r.leisureTime === 0)) {
-    alerts.push("Sem tempo de lazer por 2 ou mais dias — possível sobrecarga.");
+  if (last2.length === 2 && last2.every((r) => r.screenTime >= 8 && r.sleepQuality <= 4)) {
+    alerts.push("Tempo de tela alto combinado com qualidade de sono ruim.");
   }
 
-  // Tela alta + sono ruim
-  if (last2.length === 2 && last2.every((r) => r.screenTime >= 8 && r.sleepQuality <= 2)) {
-    alerts.push("Tempo de tela alto combinado com qualidade de sono ruim — recomenda-se pausas digitais.");
-  }
-
-  // Cansaço alto + humor baixo
-  if (last2.length === 2 && last2.every((r) => r.tiredness >= 4 && r.mood <= 2)) {
-    alerts.push("Cansaço alto combinado com humor baixo — sinais de esgotamento.");
+  if (last2.length === 2 && last2.every((r) => r.caffeineIntakeMgPerDay >= 400)) {
+    alerts.push("Consumo de cafeina elevado por 2 dias consecutivos.");
   }
 
   return alerts;

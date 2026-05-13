@@ -5,3 +5,9 @@ node_modules/
 out/
 
 /src/generated/prisma
+# Python virtual environments
+ml_service/.venv/
+.venv/
+venv/
+__pycache__/
+*.pyc

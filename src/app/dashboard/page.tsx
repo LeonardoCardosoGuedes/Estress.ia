@@ -16,12 +16,12 @@ import Link from "next/link";
 import {
   Moon,
   Monitor,
-  BookOpen,
-  Smile,
-  Zap,
+  MessageCircle,
+  Gamepad2,
   Coffee,
   Heart,
   CalendarPlus,
+  MapPin,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -44,8 +44,7 @@ function DashboardContent() {
 
   const firstName = profile?.name?.split(" ")[0] ?? "Estudante";
   const hour = new Date().getHours();
-  const greeting =
-    hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
+  const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
 
   if (loading) {
     return (
@@ -57,16 +56,15 @@ function DashboardContent() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-slate-900">
-            {greeting}, {firstName}! 👋
+            {greeting}, {firstName}!
           </h2>
           <p className="text-slate-500 mt-1">
             {latest
-              ? `Último registro: ${formatDate(latest.date)}`
-              : "Nenhum registro ainda — comece hoje!"}
+              ? `Ultimo registro: ${formatDate(latest.date)}`
+              : "Nenhum registro ainda - comece hoje!"}
           </p>
         </div>
         <Link href="/registro">
@@ -82,7 +80,7 @@ function DashboardContent() {
           <Heart className="w-12 h-12 text-blue-400 mx-auto mb-3" />
           <h3 className="font-semibold text-slate-800 text-lg mb-2">Bem-vindo ao Stressia!</h3>
           <p className="text-slate-500 max-w-md mx-auto text-sm mb-4">
-            Faça seu primeiro registro diário para começar a monitorar sua saúde mental e receber insights personalizados.
+            Faca seu primeiro registro para prever o nivel de estresse e receber insights personalizados.
           </p>
           <Link href="/registro">
             <Button>Fazer primeiro registro</Button>
@@ -90,67 +88,64 @@ function DashboardContent() {
         </div>
       ) : (
         <>
-          {/* Métricas */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <MetricCard
               label="Sono"
-              value={latest?.sleepHours ?? "–"}
+              value={latest?.sleepHours ?? "-"}
               unit="h"
               icon={Moon}
               color="blue"
-              subtitle={`Qualidade: ${latest?.sleepQuality ?? "–"}/5`}
+              subtitle={`Qualidade: ${latest?.sleepQuality ?? "-"}/10`}
             />
             <MetricCard
-              label="Tempo de Tela"
-              value={latest?.screenTime ?? "–"}
+              label="Tela"
+              value={latest?.screenTime ?? "-"}
               unit="h"
               icon={Monitor}
               color="amber"
             />
             <MetricCard
-              label="Estudo"
-              value={latest?.studyTime ?? "–"}
+              label="Redes sociais"
+              value={latest?.socialMediaHours ?? "-"}
               unit="h"
-              icon={BookOpen}
+              icon={MessageCircle}
               color="purple"
             />
             <MetricCard
-              label="Lazer"
-              value={latest?.leisureTime ?? "–"}
+              label="Jogos"
+              value={latest?.gamingHours ?? "-"}
               unit="h"
+              icon={Gamepad2}
+              color="green"
+            />
+            <MetricCard
+              label="Cafeina"
+              value={latest?.caffeineIntakeMgPerDay ?? "-"}
+              unit="mg"
               icon={Coffee}
-              color="green"
+              color="amber"
             />
             <MetricCard
-              label="Humor"
-              value={latest ? `${latest.mood}/5` : "–"}
-              icon={Smile}
-              color="green"
+              label="Local"
+              value={latest?.locationType ?? "-"}
+              icon={MapPin}
+              color="blue"
             />
             <MetricCard
-              label="Cansaço"
-              value={latest ? `${latest.tiredness}/5` : "–"}
-              icon={Zap}
-              color={latest?.tiredness >= 4 ? "red" : "amber"}
-            />
-            <MetricCard
-              label="Estresse"
-              value={latest ? `${latest.stress}/5` : "–"}
+              label="Estresse previsto"
+              value={latest ? latest.stress.toFixed(1) : "-"}
               icon={Heart}
-              color={latest?.stress >= 4 ? "red" : "blue"}
+              color={latest && latest.stress >= 7 ? "red" : "blue"}
             />
           </div>
 
-          {/* Risco + Alertas */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RiskIndicator analysis={analysis} />
             <AlertsPanel alerts={alerts} />
           </div>
 
-          {/* Recomendações */}
           <RecommendationsPanel recommendations={analysis.recommendations} />
 
-          {/* Gráfico semanal */}
           {records.length >= 2 && <WeeklyChart records={records} />}
         </>
       )}

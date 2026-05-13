@@ -3,13 +3,17 @@ export interface DailyRecord {
   userId: string;
   date: string; // YYYY-MM-DD
   sleepHours: number;
-  sleepQuality: number; // 1-5
+  sleepQuality: number; // 1-10
   screenTime: number;
+  socialMediaHours: number;
+  gamingHours: number;
+  caffeineIntakeMgPerDay: number;
+  locationType: string;
   studyTime: number;
   leisureTime: number;
   mood: number; // 1-5
   tiredness: number; // 1-5
-  stress: number; // 1-5
+  stress: number; // predicted stress_level
   notes: string;
   createdAt: string;
 }

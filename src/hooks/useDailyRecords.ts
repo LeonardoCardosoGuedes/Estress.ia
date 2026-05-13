@@ -3,6 +3,11 @@
 import { useState, useEffect } from "react";
 import type { DailyRecord } from "@/types/dailyRecord";
 
+type NewDailyRecord = Omit<
+  DailyRecord,
+  "id" | "createdAt" | "stress" | "studyTime" | "leisureTime" | "mood" | "tiredness"
+>;
+
 export function useDailyRecords(userId: string | undefined) {
   const [records, setRecords] = useState<DailyRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,13 +29,16 @@ export function useDailyRecords(userId: string | undefined) {
       .finally(() => setLoading(false));
   }, [userId]); // re-executa toda vez que userId muda (undefined → uid real)
 
-  async function addRecord(record: Omit<DailyRecord, "id" | "createdAt">) {
+  async function addRecord(record: NewDailyRecord) {
     const res = await fetch("/api/records", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(record),
     });
-    if (!res.ok) throw new Error("Falha ao salvar registro");
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new Error(data?.error ?? "Falha ao salvar registro");
+    }
 
     // Recarrega registros após inserção
     const updated = await fetch("/api/records").then((r) => r.json());

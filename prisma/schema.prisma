@@ -20,20 +20,24 @@ model User {
 }
 
 model DailyRecord {
-  id           String   @id @default(uuid())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date         String
-  sleepHours   Float
-  sleepQuality Int
-  screenTime   Float
-  studyTime    Float
-  leisureTime  Float
-  mood         Int
-  tiredness    Int
-  stress       Int
-  notes        String   @default("")
-  createdAt    DateTime @default(now())
+  id                     String   @id @default(uuid())
+  userId                 String
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date                   String
+  sleepHours             Float
+  sleepQuality           Int
+  screenTime             Float
+  socialMediaHours       Float    @default(0)
+  gamingHours            Float    @default(0)
+  caffeineIntakeMgPerDay Float    @default(0)
+  locationType           String   @default("unknown")
+  studyTime              Float
+  leisureTime            Float
+  mood                   Int
+  tiredness              Int
+  stress                 Float
+  notes                  String   @default("")
+  createdAt              DateTime @default(now())
 
   @@unique([userId, date])
 }

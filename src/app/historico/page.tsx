@@ -10,7 +10,7 @@ import { StressChart } from "@/components/charts/StressChart";
 import { useAuth } from "@/hooks/useAuth";
 import { useDailyRecords } from "@/hooks/useDailyRecords";
 import { formatDate, getWellbeingScore } from "@/lib/recommendations";
-import { Moon, Monitor, BookOpen, Coffee, Smile, Zap, Heart } from "lucide-react";
+import { Moon, Monitor, MessageCircle, Gamepad2, Coffee, Heart } from "lucide-react";
 
 export default function HistoricoPage() {
   return (
@@ -30,7 +30,7 @@ function HistoricoContent() {
   const filtered = records.slice(0, filter);
 
   if (loading) {
-    return <div className="text-slate-400 text-sm">Carregando histórico...</div>;
+    return <div className="text-slate-400 text-sm">Carregando historico...</div>;
   }
 
   if (records.length === 0) {
@@ -45,7 +45,7 @@ function HistoricoContent() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">Histórico</h2>
+          <h2 className="text-2xl font-black text-slate-900">Historico</h2>
           <p className="text-slate-500 mt-1">{records.length} registros encontrados</p>
         </div>
         <div className="flex gap-2">
@@ -65,7 +65,6 @@ function HistoricoContent() {
         </div>
       </div>
 
-      {/* Gráficos */}
       <div className="space-y-6">
         <WellbeingChart records={filtered} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -74,7 +73,6 @@ function HistoricoContent() {
         </div>
       </div>
 
-      {/* Tabela de registros */}
       <Card padding="none">
         <div className="p-6 border-b border-slate-100">
           <h3 className="font-semibold text-slate-800">Registros recentes</h3>
@@ -91,10 +89,10 @@ function HistoricoContent() {
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                 <MetricBadge icon={Moon} label="Sono" value={`${record.sleepHours}h`} />
                 <MetricBadge icon={Monitor} label="Tela" value={`${record.screenTime}h`} />
-                <MetricBadge icon={BookOpen} label="Estudo" value={`${record.studyTime}h`} />
-                <MetricBadge icon={Coffee} label="Lazer" value={`${record.leisureTime}h`} />
-                <MetricBadge icon={Smile} label="Humor" value={`${record.mood}/5`} />
-                <MetricBadge icon={Heart} label="Estresse" value={`${record.stress}/5`} />
+                <MetricBadge icon={MessageCircle} label="Social" value={`${record.socialMediaHours}h`} />
+                <MetricBadge icon={Gamepad2} label="Jogos" value={`${record.gamingHours}h`} />
+                <MetricBadge icon={Coffee} label="Cafeina" value={`${record.caffeineIntakeMgPerDay}mg`} />
+                <MetricBadge icon={Heart} label="Estresse" value={record.stress.toFixed(1)} />
               </div>
               {record.notes && (
                 <p className="mt-3 text-sm text-slate-500 italic">"{record.notes}"</p>

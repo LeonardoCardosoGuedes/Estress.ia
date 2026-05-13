@@ -26,13 +26,13 @@ export function WeeklyChart({ records }: WeeklyChartProps) {
       date: formatDate(r.date).slice(0, 5),
       Sono: r.sleepHours,
       Tela: r.screenTime,
-      Estudo: r.studyTime,
-      Lazer: r.leisureTime,
+      "Redes sociais": r.socialMediaHours,
+      Jogos: r.gamingHours,
     }));
 
   return (
     <Card>
-      <h3 className="font-semibold text-slate-800 mb-6">Evolução Semanal — Horas</h3>
+      <h3 className="font-semibold text-slate-800 mb-6">Evolucao semanal - horas</h3>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -44,8 +44,8 @@ export function WeeklyChart({ records }: WeeklyChartProps) {
           <Legend wrapperStyle={{ fontSize: 13 }} />
           <Line type="monotone" dataKey="Sono" stroke="#0ea5e9" strokeWidth={2} dot={false} />
           <Line type="monotone" dataKey="Tela" stroke="#f59e0b" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="Estudo" stroke="#8b5cf6" strokeWidth={2} dot={false} />
-          <Line type="monotone" dataKey="Lazer" stroke="#22c55e" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="Redes sociais" stroke="#8b5cf6" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="Jogos" stroke="#22c55e" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </Card>

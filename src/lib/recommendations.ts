@@ -2,11 +2,10 @@ import type { DailyRecord } from "@/types/dailyRecord";
 
 export function getWellbeingScore(record: DailyRecord): number {
   const sleepScore = Math.min((record.sleepHours / 8) * 30, 30);
-  const qualityScore = (record.sleepQuality / 5) * 15;
-  const moodScore = (record.mood / 5) * 20;
-  const stressScore = ((5 - record.stress) / 5) * 20;
-  const leisureScore = Math.min((record.leisureTime / 2) * 15, 15);
-  return Math.round(sleepScore + qualityScore + moodScore + stressScore + leisureScore);
+  const qualityScore = (record.sleepQuality / 10) * 20;
+  const stressScore = Math.max(((10 - record.stress) / 10) * 30, 0);
+  const screenScore = Math.max(20 - Math.max(record.screenTime - 4, 0) * 3, 0);
+  return Math.round(sleepScore + qualityScore + stressScore + screenScore);
 }
 
 export function getRiskColor(level: string): string {

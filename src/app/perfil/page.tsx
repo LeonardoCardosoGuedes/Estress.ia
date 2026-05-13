@@ -88,7 +88,7 @@ function PerfilContent() {
             label="Média de estresse"
             value={
               records.length > 0
-                ? `${(records.reduce((a, r) => a + r.stress, 0) / records.length).toFixed(1)}/5`
+                ? `${(records.reduce((a, r) => a + r.stress, 0) / records.length).toFixed(1)}`
                 : "–"
             }
           />
@@ -96,7 +96,7 @@ function PerfilContent() {
             label="Média de humor"
             value={
               records.length > 0
-                ? `${(records.reduce((a, r) => a + r.mood, 0) / records.length).toFixed(1)}/5`
+                ? `${(records.reduce((a, r) => a + r.screenTime, 0) / records.length).toFixed(1)}h`
                 : "–"
             }
           />
