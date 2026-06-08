@@ -16,8 +16,8 @@ export const RangeInput = forwardRef<HTMLInputElement, RangeInputProps>(
   ({ label, value, min = 1, max = 5, error, leftLabel, rightLabel, ...props }, ref) => {
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center">
-          <label className="text-sm font-medium text-slate-700">{label}</label>
+        <div className="flex items-center justify-between gap-3">
+          <label className="min-w-0 text-sm font-medium text-slate-700">{label}</label>
           <span className="text-lg font-bold text-blue-600">{value}</span>
         </div>
         <input
@@ -30,9 +30,9 @@ export const RangeInput = forwardRef<HTMLInputElement, RangeInputProps>(
           {...props}
         />
         {(leftLabel || rightLabel) && (
-          <div className="flex justify-between text-xs text-slate-400">
-            <span>{leftLabel}</span>
-            <span>{rightLabel}</span>
+          <div className="flex justify-between gap-3 text-xs text-slate-400">
+            <span className="min-w-0">{leftLabel}</span>
+            <span className="min-w-0 text-right">{rightLabel}</span>
           </div>
         )}
         {error && <p className="text-xs text-red-500">{error}</p>}

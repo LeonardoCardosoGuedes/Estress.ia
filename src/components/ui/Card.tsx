@@ -13,8 +13,8 @@ export function Card({ children, className, padding = "md", ...props }: CardProp
         {
           "p-0": padding === "none",
           "p-4": padding === "sm",
-          "p-6": padding === "md",
-          "p-8": padding === "lg",
+          "p-4 sm:p-6": padding === "md",
+          "p-6 sm:p-8": padding === "lg",
         },
         className
       )}

@@ -35,21 +35,21 @@ function PerfilContent() {
   if (!profile) return null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-slate-900">Perfil</h2>
+        <h2 className="text-xl font-black text-slate-900 sm:text-2xl">Perfil</h2>
         <p className="text-slate-500 mt-1">Informações da sua conta e resumo acadêmico</p>
       </div>
 
       {/* Avatar + Nome */}
       <Card>
-        <div className="flex items-center gap-6">
-          <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-            <User className="w-10 h-10 text-blue-600" />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-100 sm:h-20 sm:w-20">
+            <User className="h-8 w-8 text-blue-600 sm:h-10 sm:w-10" />
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-slate-900">{profile.name}</h3>
-            <p className="text-slate-500 text-sm mt-0.5">{profile.course}</p>
+          <div className="min-w-0">
+            <h3 className="break-words text-lg font-bold text-slate-900 sm:text-xl">{profile.name}</h3>
+            <p className="mt-0.5 break-words text-sm text-slate-500">{profile.course}</p>
             <span
               className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold text-white"
               style={{ backgroundColor: getRiskColor(analysis.level) }}
@@ -74,7 +74,7 @@ function PerfilContent() {
       {/* Estatísticas */}
       <Card>
         <h3 className="font-semibold text-slate-800 mb-4">Estatísticas</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <StatBox label="Registros totais" value={records.length.toString()} />
           <StatBox
             label="Média de sono"
@@ -119,11 +119,11 @@ function PerfilContent() {
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-xl">
+    <div className="flex items-center gap-4 rounded-xl bg-slate-50 p-3">
       <Icon className="w-5 h-5 text-slate-400 flex-shrink-0" />
-      <div>
+      <div className="min-w-0">
         <p className="text-xs text-slate-400 font-medium">{label}</p>
-        <p className="text-sm text-slate-800 font-medium mt-0.5">{value}</p>
+        <p className="mt-0.5 break-words text-sm font-medium text-slate-800">{value}</p>
       </div>
     </div>
   );
@@ -131,8 +131,8 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
 
 function StatBox({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-slate-50 rounded-xl p-4 text-center">
-      <p className="text-2xl font-black text-slate-900">{value}</p>
+    <div className="min-w-0 rounded-xl bg-slate-50 p-4 text-center">
+      <p className="break-words text-2xl font-black text-slate-900">{value}</p>
       <p className="text-xs text-slate-500 mt-1">{label}</p>
     </div>
   );

@@ -31,10 +31,11 @@ export function WeeklyChart({ records }: WeeklyChartProps) {
     }));
 
   return (
-    <Card>
+    <Card className="min-w-0 overflow-hidden">
       <h3 className="font-semibold text-slate-800 mb-6">Evolucao semanal - horas</h3>
-      <ResponsiveContainer width="100%" height={280}>
-        <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+      <div className="h-72 sm:h-[280px]">
+        <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 5, right: 4, left: -24, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis dataKey="date" tick={{ fontSize: 12, fill: "#94a3b8" }} />
           <YAxis tick={{ fontSize: 12, fill: "#94a3b8" }} />
@@ -47,7 +48,8 @@ export function WeeklyChart({ records }: WeeklyChartProps) {
           <Line type="monotone" dataKey="Redes sociais" stroke="#8b5cf6" strokeWidth={2} dot={false} />
           <Line type="monotone" dataKey="Jogos" stroke="#22c55e" strokeWidth={2} dot={false} />
         </LineChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </Card>
   );
 }

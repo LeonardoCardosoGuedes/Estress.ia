@@ -82,7 +82,7 @@ function RegistroContent() {
 
   if (success) {
     return (
-      <div className="flex items-center justify-center h-96">
+      <div className="flex min-h-[24rem] items-center justify-center">
         <div className="text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-slate-800">Registro salvo!</h3>
@@ -93,10 +93,10 @@ function RegistroContent() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-slate-900">Registro diario</h2>
-        <p className="text-slate-500 mt-1">
+        <h2 className="text-xl font-black text-slate-900 sm:text-2xl">Registro diario</h2>
+        <p className="mt-1 text-sm text-slate-500 sm:text-base">
           Informe os dados de entrada do modelo para prever seu nivel de estresse.
         </p>
       </div>

@@ -13,18 +13,18 @@ export function RiskIndicator({ analysis }: RiskIndicatorProps) {
 
   return (
     <Card>
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h3 className="font-semibold text-slate-800">Índice de Risco de Fadiga</h3>
         <span
-          className="px-3 py-1 rounded-full text-sm font-semibold text-white"
+          className="w-fit rounded-full px-3 py-1 text-sm font-semibold text-white"
           style={{ backgroundColor: color }}
         >
           {label}
         </span>
       </div>
 
-      <div className="flex items-end gap-4 mb-4">
-        <span className="text-5xl font-black text-slate-900">{pct}</span>
+      <div className="mb-4 flex items-end gap-3 sm:gap-4">
+        <span className="text-4xl font-black text-slate-900 sm:text-5xl">{pct}</span>
         <span className="text-slate-400 text-lg mb-1">/100</span>
       </div>
 

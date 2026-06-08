@@ -55,20 +55,20 @@ function DashboardContent() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
             {greeting}, {firstName}!
           </h2>
-          <p className="text-slate-500 mt-1">
+          <p className="mt-1 text-sm text-slate-500 sm:text-base">
             {latest
               ? `Ultimo registro: ${formatDate(latest.date)}`
               : "Nenhum registro ainda - comece hoje!"}
           </p>
         </div>
-        <Link href="/registro">
-          <Button size="lg" className="flex items-center gap-2">
+        <Link href="/registro" className="w-full sm:w-auto">
+          <Button size="lg" className="flex w-full items-center justify-center gap-2 sm:w-auto">
             <CalendarPlus className="w-5 h-5" />
             Registrar hoje
           </Button>
@@ -76,7 +76,7 @@ function DashboardContent() {
       </div>
 
       {records.length === 0 ? (
-        <div className="bg-blue-50 rounded-2xl p-8 text-center border border-blue-100">
+        <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6 text-center sm:p-8">
           <Heart className="w-12 h-12 text-blue-400 mx-auto mb-3" />
           <h3 className="font-semibold text-slate-800 text-lg mb-2">Bem-vindo ao Stressia!</h3>
           <p className="text-slate-500 max-w-md mx-auto text-sm mb-4">
@@ -88,7 +88,7 @@ function DashboardContent() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard
               label="Sono"
               value={latest?.sleepHours ?? "-"}

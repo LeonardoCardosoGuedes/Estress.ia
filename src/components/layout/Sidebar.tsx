@@ -14,10 +14,10 @@ import {
 import { clsx } from "clsx";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/registro", label: "Registro Diário", icon: ClipboardList },
-  { href: "/historico", label: "Histórico", icon: History },
-  { href: "/perfil", label: "Perfil", icon: User },
+  { href: "/dashboard", label: "Dashboard", shortLabel: "Início", icon: LayoutDashboard },
+  { href: "/registro", label: "Registro Diário", shortLabel: "Registro", icon: ClipboardList },
+  { href: "/historico", label: "Histórico", shortLabel: "Histórico", icon: History },
+  { href: "/perfil", label: "Perfil", shortLabel: "Perfil", icon: User },
 ];
 
 export function Sidebar() {
@@ -31,46 +31,95 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="w-64 min-h-screen bg-white border-r border-slate-100 flex flex-col fixed left-0 top-0 z-30">
-      <div className="p-6 border-b border-slate-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-            <Brain className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="font-bold text-slate-900 text-lg leading-none">Stressia</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Saúde Mental Acadêmica</p>
+    <>
+      <aside className="fixed left-0 top-0 z-30 hidden min-h-screen w-64 flex-col border-r border-slate-100 bg-white lg:flex">
+        <div className="border-b border-slate-100 p-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
+              <Brain className="h-6 w-6 text-white" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-lg font-bold leading-none text-slate-900">Stressia</h1>
+              <p className="mt-0.5 text-xs text-slate-400">Saúde Mental Acadêmica</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <nav className="flex-1 p-4 flex flex-col gap-1">
-        {navItems.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={clsx(
-              "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all",
-              pathname === href
-                ? "bg-blue-50 text-blue-700"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-            )}
+        <nav className="flex flex-1 flex-col gap-1 p-4">
+          {navItems.map(({ href, label, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className={clsx(
+                "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                pathname === href
+                  ? "bg-blue-50 text-blue-700"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              )}
+            >
+              <Icon className="h-5 w-5" />
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="border-t border-slate-100 p-4">
+          <button
+            onClick={handleSignOut}
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition-all hover:bg-red-50 hover:text-red-600"
           >
-            <Icon className="w-5 h-5" />
-            {label}
-          </Link>
-        ))}
-      </nav>
+            <LogOut className="h-5 w-5" />
+            Sair
+          </button>
+        </div>
+      </aside>
 
-      <div className="p-4 border-t border-slate-100">
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all"
-        >
-          <LogOut className="w-5 h-5" />
-          Sair
-        </button>
+      <div className="lg:hidden">
+        <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-100 bg-white/95 px-4 backdrop-blur">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-600">
+              <Brain className="h-6 w-6 text-white" />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-base font-bold leading-none text-slate-900">Stressia</p>
+              <p className="mt-0.5 truncate text-xs text-slate-400">Saúde Mental Acadêmica</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            aria-label="Sair da conta"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-slate-500 transition-all hover:bg-red-50 hover:text-red-600"
+          >
+            <LogOut className="h-5 w-5" />
+          </button>
+        </header>
+
+        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-100 bg-white/95 px-2 pb-2 pt-2 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="mx-auto flex max-w-md items-center justify-between gap-1">
+            {navItems.map(({ href, shortLabel, icon: Icon }) => {
+              const active = pathname === href;
+
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={clsx(
+                    "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2 text-[11px] font-medium transition-all",
+                    active
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                  )}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="max-w-full truncate">{shortLabel}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
       </div>
-    </aside>
+    </>
   );
 }

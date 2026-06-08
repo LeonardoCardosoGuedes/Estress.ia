@@ -15,11 +15,11 @@ export function RecommendationsPanel({ recommendations }: RecommendationsPanelPr
 
       <div className="space-y-3">
         {recommendations.map((rec, i) => (
-          <div key={i} className="flex items-start gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+          <div key={i} className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-3 sm:p-4">
             <span className="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
               {i + 1}
             </span>
-            <p className="text-sm text-slate-700 leading-relaxed">{rec}</p>
+            <p className="break-words text-sm leading-relaxed text-slate-700">{rec}</p>
           </div>
         ))}
       </div>

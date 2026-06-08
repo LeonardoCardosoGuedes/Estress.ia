@@ -27,10 +27,11 @@ export function WellbeingChart({ records }: WellbeingChartProps) {
     }));
 
   return (
-    <Card>
+    <Card className="min-w-0 overflow-hidden">
       <h3 className="font-semibold text-slate-800 mb-6">Evolução do Bem-estar</h3>
-      <ResponsiveContainer width="100%" height={280}>
-        <AreaChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+      <div className="h-64 sm:h-[280px]">
+        <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ top: 5, right: 4, left: -24, bottom: 5 }}>
           <defs>
             <linearGradient id="wellbeing" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
@@ -51,7 +52,8 @@ export function WellbeingChart({ records }: WellbeingChartProps) {
             fill="url(#wellbeing)"
           />
         </AreaChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </Card>
   );
 }

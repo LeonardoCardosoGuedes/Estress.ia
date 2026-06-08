@@ -14,7 +14,7 @@ export function AlertsPanel({ alerts }: AlertsPanelProps) {
       </h3>
 
       {alerts.length === 0 ? (
-        <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
+        <div className="flex items-start gap-3 rounded-xl bg-green-50 p-3">
           <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
           <p className="text-sm text-green-700">Nenhum alerta no momento. Continue mantendo uma rotina equilibrada!</p>
         </div>
@@ -23,7 +23,7 @@ export function AlertsPanel({ alerts }: AlertsPanelProps) {
           {alerts.map((alert, i) => (
             <div key={i} className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
               <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-800">{alert}</p>
+              <p className="break-words text-sm text-amber-800">{alert}</p>
             </div>
           ))}
         </div>

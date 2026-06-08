@@ -39,6 +39,7 @@ body {
   font-family: var(--font-sans);
   background-color: #f8fafc;
   color: #1e293b;
+  overflow-x: hidden;
 }
 
 :root {

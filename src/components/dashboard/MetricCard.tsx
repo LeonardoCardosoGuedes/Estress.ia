@@ -30,13 +30,13 @@ export function MetricCard({
   const colors = colorMap[color];
 
   return (
-    <Card className="flex items-start gap-4">
-      <div className={clsx("w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0", colors.bg)}>
-        <Icon className={clsx("w-6 h-6", colors.icon)} />
+    <Card className="flex min-w-0 items-start gap-3 sm:gap-4">
+      <div className={clsx("flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12", colors.bg)}>
+        <Icon className={clsx("h-5 w-5 sm:h-6 sm:w-6", colors.icon)} />
       </div>
-      <div>
-        <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{label}</p>
-        <p className={clsx("text-2xl font-bold mt-0.5", colors.value)}>
+      <div className="min-w-0">
+        <p className="break-words text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
+        <p className={clsx("mt-0.5 break-words text-xl font-bold sm:text-2xl", colors.value)}>
           {value}
           {unit && <span className="text-base font-normal text-slate-400 ml-1">{unit}</span>}
         </p>

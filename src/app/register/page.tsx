@@ -59,17 +59,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4 py-12">
+    <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 px-4 py-8 sm:py-12">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex w-16 h-16 bg-blue-600 rounded-2xl items-center justify-center mb-4">
-            <Brain className="w-9 h-9 text-white" />
+        <div className="mb-6 text-center sm:mb-8">
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 sm:h-16 sm:w-16">
+            <Brain className="h-8 w-8 text-white sm:h-9 sm:w-9" />
           </div>
-          <h1 className="text-3xl font-black text-slate-900">Stressia</h1>
+          <h1 className="text-2xl font-black text-slate-900 sm:text-3xl">Stressia</h1>
           <p className="text-slate-500 mt-1">Crie sua conta gratuita</p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
+        <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-xl sm:p-8">
           <h2 className="text-xl font-bold text-slate-800 mb-6">Criar conta</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

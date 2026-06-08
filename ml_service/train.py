@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from pathlib import Path
 
 import joblib
@@ -26,9 +27,32 @@ NUMERIC_FEATURES = [
 ]
 CATEGORICAL_FEATURES = ["location_type"]
 FEATURE_COLUMNS = NUMERIC_FEATURES + CATEGORICAL_FEATURES
+RANDOM_FOREST_PARAMS = {
+    "n_estimators": 500,
+    "max_depth": 3,
+    "min_samples_leaf": 50,
+    "min_samples_split": 100,
+    "max_features": "sqrt",
+}
 
 
-def build_pipeline() -> Pipeline:
+@dataclass(frozen=True)
+class SplitMetrics:
+    rows: int
+    mae: float
+    r2: float
+
+
+@dataclass(frozen=True)
+class HoldoutResult:
+    repeat: int
+    seed: int
+    train: SplitMetrics
+    validation: SplitMetrics
+    test: SplitMetrics
+
+
+def build_pipeline(random_state: int = 42) -> Pipeline:
     numeric_pipeline = Pipeline(
         steps=[
             ("imputer", SimpleImputer(strategy="median")),
@@ -47,7 +71,7 @@ def build_pipeline() -> Pipeline:
             ("categorical", categorical_pipeline, CATEGORICAL_FEATURES),
         ]
     )
-    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model = RandomForestRegressor(**RANDOM_FOREST_PARAMS, random_state=random_state)
     return Pipeline(
         steps=[
             ("preprocessor", preprocessor),
@@ -77,29 +101,123 @@ def load_training_data(data_path: Path) -> tuple[pd.DataFrame, pd.Series]:
     return X, y
 
 
-def train(data_path: Path, output_path: Path) -> None:
-    X, y = load_training_data(data_path)
-    X_train, X_test, y_train, y_test = train_test_split(
+def split_train_validation_test(
+    X: pd.DataFrame,
+    y: pd.Series,
+    validation_size: float,
+    test_size: float,
+    random_state: int,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, pd.Series]:
+    if validation_size <= 0 or test_size <= 0:
+        raise ValueError("validation_size and test_size must be greater than 0.")
+    if validation_size + test_size >= 1:
+        raise ValueError("validation_size + test_size must be less than 1.")
+
+    X_train_validation, X_test, y_train_validation, y_test = train_test_split(
         X,
         y,
-        test_size=0.2,
-        random_state=42,
+        test_size=test_size,
+        random_state=random_state,
+    )
+    validation_fraction = validation_size / (1 - test_size)
+    X_train, X_validation, y_train, y_validation = train_test_split(
+        X_train_validation,
+        y_train_validation,
+        test_size=validation_fraction,
+        random_state=random_state,
     )
 
-    pipeline = build_pipeline()
-    pipeline.fit(X_train, y_train)
+    return X_train, X_validation, X_test, y_train, y_validation, y_test
 
-    predictions = pipeline.predict(X_test)
-    mae = mean_absolute_error(y_test, predictions)
-    r2 = r2_score(y_test, predictions)
+
+def evaluate_split(pipeline: Pipeline, X: pd.DataFrame, y: pd.Series) -> SplitMetrics:
+    predictions = pipeline.predict(X)
+    return SplitMetrics(
+        rows=len(X),
+        mae=mean_absolute_error(y, predictions),
+        r2=r2_score(y, predictions),
+    )
+
+
+def summarize_results(results: list[HoldoutResult]) -> pd.DataFrame:
+    rows = []
+    for result in results:
+        for split_name in ("train", "validation", "test"):
+            metrics = getattr(result, split_name)
+            rows.append(
+                {
+                    "split": split_name,
+                    "mae": metrics.mae,
+                    "r2": metrics.r2,
+                }
+            )
+    return pd.DataFrame(rows).groupby("split").agg(["mean", "std"])
+
+
+def train(
+    data_path: Path,
+    output_path: Path,
+    repeats: int,
+    validation_size: float,
+    test_size: float,
+    random_state: int,
+) -> None:
+    if repeats < 1:
+        raise ValueError("repeats must be at least 1.")
+
+    X, y = load_training_data(data_path)
+    results: list[HoldoutResult] = []
+    best_pipeline: Pipeline | None = None
+    best_result: HoldoutResult | None = None
+
+    for repeat in range(1, repeats + 1):
+        seed = random_state + repeat - 1
+        X_train, X_validation, X_test, y_train, y_validation, y_test = split_train_validation_test(
+            X,
+            y,
+            validation_size=validation_size,
+            test_size=test_size,
+            random_state=seed,
+        )
+
+        pipeline = build_pipeline(random_state=seed)
+        pipeline.fit(X_train, y_train)
+
+        result = HoldoutResult(
+            repeat=repeat,
+            seed=seed,
+            train=evaluate_split(pipeline, X_train, y_train),
+            validation=evaluate_split(pipeline, X_validation, y_validation),
+            test=evaluate_split(pipeline, X_test, y_test),
+        )
+        results.append(result)
+
+        if best_result is None or result.validation.mae < best_result.validation.mae:
+            best_result = result
+            best_pipeline = pipeline
+
+        print(
+            f"Repeat {repeat:02d} seed={seed} | "
+            f"train MAE={result.train.mae:.4f} R2={result.train.r2:.4f} | "
+            f"validation MAE={result.validation.mae:.4f} R2={result.validation.r2:.4f} | "
+            f"test MAE={result.test.mae:.4f} R2={result.test.r2:.4f}"
+        )
+
+    if best_pipeline is None or best_result is None:
+        raise RuntimeError("Training failed before producing a model.")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(pipeline, output_path)
+    joblib.dump(best_pipeline, output_path)
 
-    print(f"Training rows: {len(X_train)}")
-    print(f"Test rows: {len(X_test)}")
-    print(f"MAE: {mae:.4f}")
-    print(f"R2: {r2:.4f}")
+    summary = summarize_results(results)
+    print("\nRepeated hold-out summary:")
+    print(summary.to_string(float_format=lambda value: f"{value:.4f}"))
+    print(
+        "\nBest model selected by validation MAE: "
+        f"repeat={best_result.repeat} seed={best_result.seed} "
+        f"validation MAE={best_result.validation.mae:.4f} "
+        f"test MAE={best_result.test.mae:.4f}"
+    )
     print(f"Saved model pipeline to: {output_path}")
 
 
@@ -115,9 +233,40 @@ def parse_args() -> argparse.Namespace:
         default="model_pipeline.joblib",
         help="Output path for the trained joblib pipeline.",
     )
+    parser.add_argument(
+        "--repeats",
+        type=int,
+        default=10,
+        help="Number of repeated hold-out runs.",
+    )
+    parser.add_argument(
+        "--validation-size",
+        type=float,
+        default=0.2,
+        help="Validation set proportion of the full dataset.",
+    )
+    parser.add_argument(
+        "--test-size",
+        type=float,
+        default=0.2,
+        help="Test set proportion of the full dataset.",
+    )
+    parser.add_argument(
+        "--random-state",
+        type=int,
+        default=42,
+        help="Base random seed used for repeated hold-out splits.",
+    )
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    train(Path(args.data).resolve(), Path(args.out).resolve())
+    train(
+        Path(args.data).resolve(),
+        Path(args.out).resolve(),
+        repeats=args.repeats,
+        validation_size=args.validation_size,
+        test_size=args.test_size,
+        random_state=args.random_state,
+    )
