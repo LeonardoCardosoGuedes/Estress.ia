@@ -30,15 +30,56 @@ services:
       postgres:
         condition: service_healthy
 
-  ml_service:
+  mlflow:
     build:
       context: ./ml_service
-    container_name: stressia_ml_service
+    container_name: stressia_mlflow
     restart: unless-stopped
     environment:
-      MODEL_PATH: /app/ml_service/model_pipeline.joblib
+      DATA_PATH: /data/digital_diet_mental_health.csv
+      FORCE_RETRAIN: "${FORCE_RETRAIN:-false}"
+      MLFLOW_TRACKING_URI: sqlite:////mlflow/mlflow.db
+      MLFLOW_DEFAULT_ARTIFACT_ROOT: file:///mlflow/mlartifacts
+      MLFLOW_EXPERIMENT_NAME: stressia-stress-prediction
+      MODEL_URI_FILE: /mlflow/model_uri.txt
     ports:
+      - "5000:5000"
       - "8001:8001"
+    volumes:
+      - ./digital_diet_mental_health.csv:/data/digital_diet_mental_health.csv:ro
+      - mlflow_data:/mlflow
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8001/ping', timeout=2)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+
+  web:
+    profiles:
+      - full
+    build:
+      context: .
+    container_name: stressia_web
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://stressia:stressia123@postgres:5432/stressia?schema=public
+      JWT_SECRET: "${JWT_SECRET:-uma-senha-secreta-aqui}"
+      MLFLOW_MODEL_URL: http://mlflow:8001
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mlflow:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  mlflow_data:

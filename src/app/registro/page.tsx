@@ -97,7 +97,7 @@ function RegistroContent() {
       <div>
         <h2 className="text-xl font-black text-slate-900 sm:text-2xl">Registro diario</h2>
         <p className="mt-1 text-sm text-slate-500 sm:text-base">
-          Informe os dados de entrada do modelo para prever seu nivel de estresse.
+          Informe os dados de entrada do modelo MLflow para prever seu nivel de estresse.
         </p>
       </div>
 

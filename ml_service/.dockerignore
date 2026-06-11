@@ -1,0 +1,9 @@
+.venv
+__pycache__
+*.pyc
+
+model_pipeline.joblib
+model_uri.txt
+mlruns
+mlartifacts
+artifacts

@@ -11,3 +11,13 @@ ml_service/.venv/
 venv/
 __pycache__/
 *.pyc
+*.joblib
+
+# MLflow runtime artifacts
+mlruns/
+mlartifacts/
+mlflow_data/
+ml_service/mlruns/
+ml_service/mlartifacts/
+ml_service/model_uri.txt
+ml_service/artifacts/

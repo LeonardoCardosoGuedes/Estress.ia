@@ -132,7 +132,7 @@ function DashboardContent() {
               color="blue"
             />
             <MetricCard
-              label="Estresse previsto"
+              label="Estresse MLflow"
               value={latest ? latest.stress.toFixed(1) : "-"}
               icon={Heart}
               color={latest && latest.stress >= 7 ? "red" : "blue"}

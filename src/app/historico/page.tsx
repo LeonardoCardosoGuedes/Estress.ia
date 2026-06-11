@@ -94,7 +94,7 @@ function HistoricoContent() {
                 <MetricBadge icon={MessageCircle} label="Social" value={`${record.socialMediaHours}h`} />
                 <MetricBadge icon={Gamepad2} label="Jogos" value={`${record.gamingHours}h`} />
                 <MetricBadge icon={Coffee} label="Cafeina" value={`${record.caffeineIntakeMgPerDay}mg`} />
-                <MetricBadge icon={Heart} label="Estresse" value={record.stress.toFixed(1)} />
+                <MetricBadge icon={Heart} label="MLflow" value={record.stress.toFixed(1)} />
               </div>
               {record.notes && (
                 <p className="mt-3 break-words text-sm italic text-slate-500">"{record.notes}"</p>
