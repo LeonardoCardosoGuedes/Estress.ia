@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/Card";
 import { WellbeingChart } from "@/components/charts/WellbeingChart";
 import { WeeklyChart } from "@/components/charts/WeeklyChart";
 import { StressChart } from "@/components/charts/StressChart";
+import { CaffeineStressChart } from "@/components/charts/CaffeineStressChart";
+import { StressDistributionChart } from "@/components/charts/StressDistributionChart";
 import { useAuth } from "@/hooks/useAuth";
 import { useDailyRecords } from "@/hooks/useDailyRecords";
 import { formatDate, getWellbeingScore } from "@/lib/recommendations";
@@ -67,11 +69,19 @@ function HistoricoContent() {
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-bold text-slate-900">Visualizacoes com interpretacao</h3>
+          <p className="mt-1 text-sm text-slate-500">
+            5 leituras calculadas com os registros reais do periodo selecionado.
+          </p>
+        </div>
         <WellbeingChart records={filtered} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <WeeklyChart records={filtered} />
           <StressChart records={filtered} />
+          <CaffeineStressChart records={filtered} />
+          <StressDistributionChart records={filtered} />
         </div>
       </div>
 

@@ -42,6 +42,12 @@ services:
       MLFLOW_DEFAULT_ARTIFACT_ROOT: file:///mlflow/mlartifacts
       MLFLOW_EXPERIMENT_NAME: stressia-stress-prediction
       MODEL_URI_FILE: /mlflow/model_uri.txt
+      TRAIN_REPEATS: "${TRAIN_REPEATS:-10}"
+      CV_FOLDS: "${CV_FOLDS:-5}"
+      SEARCH_ITERATIONS: "${SEARCH_ITERATIONS:-8}"
+      LOO_MAX_ROWS: "${LOO_MAX_ROWS:-200}"
+      SKLEARN_N_JOBS: "${SKLEARN_N_JOBS:-1}"
+      MODEL_FILTER: "${MODEL_FILTER:-}"
     ports:
       - "5000:5000"
       - "8001:8001"

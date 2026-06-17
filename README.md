@@ -1,31 +1,55 @@
-# Stressia
+# Estress.ia
 
-Stressia e uma aplicacao web para registrar habitos digitais e indicadores de descanso, prever nivel de estresse e apresentar alertas e recomendacoes em dashboard.
+Estress.ia e uma aplicacao web para registrar habitos digitais e indicadores de descanso, prever nivel de estresse academico com aprendizado de maquina e apresentar alertas, metricas, graficos e recomendacoes em um dashboard interativo.
 
-## Checklist AV2
+Google Sites do projeto: https://sites.google.com/d/1vyuxtBs6DBwLFJJjCeZ0BMbyBJBTdmhB/p/1WpOHxx4JqBKabjMsSzKi_nCKchwLRTSj/edit
 
-- Analise e modelagem: `ml_service/train.py` treina um pipeline scikit-learn com repeated hold-out, registra metricas e artefatos de analise no MLflow.
-- MLflow: o container `mlflow` expoe a UI de tracking em `http://localhost:5000` e o modelo em `http://localhost:8001/invocations`.
-- Dashboard: a aplicacao Next.js expoe o dashboard em `http://localhost:3000/dashboard`.
-- Docker: `docker-compose.yml` sobe Postgres, pgAdmin e MLflow por padrao; a aplicacao web tambem roda em Docker com o perfil `full`.
-- Integracao: `src/app/api/records/route.ts` chama o modelo servido pelo MLflow e salva a predicao no banco via Prisma.
+## Informacoes Academicas
+
+- Disciplina: Machine Learning e Projeto 6
+- Instituicao de ensino: CESAR School
+- Solucao desenvolvida: Estress.ia
+
+## Membros
+
+| Membro | Usuario no GitHub |
+| --- | --- |
+| daviruy61 | @daviruy61 |
+| apabs | @apabs |
+| helotanaka | @helotanaka |
+| lariisantos | @lariisantos |
+| jotapeans | @jotapeans |
+| LeonardoCardosoGuedes | @LeonardoCardosoGuedes |
+| ClaraMachadoAj | @ClaraMachadoAj |
+
+## Descricao da Solucao
+
+O Estress.ia acompanha a rotina de estudantes a partir de dados como horas de sono, qualidade do sono, tempo de tela, redes sociais, jogos, consumo de cafeina e tipo de localidade. Esses dados sao enviados para um modelo servido pelo MLflow, que retorna uma previsao numerica de estresse. A aplicacao salva os registros no banco de dados e exibe historico, metricas, visualizacoes, risco, alertas e recomendacoes personalizadas.
+
+O projeto cobre o fluxo de MLOps com leitura da base `digital_diet_mental_health.csv`, treinamento e comparacao de modelos scikit-learn, validacao, busca de hiperparametros, rastreamento de experimentos com MLflow, salvamento do melhor modelo, model serving e consumo das previsoes pela aplicacao Next.js.
 
 ## Arquitetura
 
-- `web`: Next.js, React, TypeScript, Prisma e dashboard. Fica no perfil opcional `full`.
-- `postgres`: banco relacional da aplicacao.
-- `pgadmin`: administracao opcional do banco.
-- `mlflow`: treino automatico na primeira subida, tracking de experimentos e model serving.
+- `web`: aplicacao Next.js com React, TypeScript, Prisma e dashboard. No Docker, fica no perfil opcional `full`.
+- `postgres`: banco relacional usado pela aplicacao.
+- `pgadmin`: interface opcional para administracao do banco.
+- `mlflow`: treinamento automatico, tracking de experimentos e model serving.
 
 O fluxo principal e:
 
 1. O usuario preenche o registro diario em `/registro`.
 2. A API Next envia as features para `MLFLOW_MODEL_URL/invocations`.
 3. O MLflow retorna `predictions`.
-4. A API salva o registro com `stress` previsto.
-5. O dashboard usa os registros para graficos, risco, alertas e recomendacoes.
+4. A API salva o registro com o valor de `stress` previsto.
+5. O dashboard usa os registros para graficos, indicadores, alertas e recomendacoes.
 
-## Fluxo WSL + Windows
+## Requisitos
+
+- Node.js e npm para rodar a aplicacao web no Windows.
+- Docker com Docker Compose para rodar os servicos pelo WSL.
+- Python apenas se desejar treinar o modelo localmente sem Docker.
+
+## Fluxo Recomendado: Docker no WSL + npm no Windows
 
 Use este fluxo se o Docker esta no terminal WSL e o `npm` esta no terminal do Windows.
 
@@ -36,7 +60,7 @@ cd /mnt/c/Users/davir/Desktop/Estress.ia
 docker compose up --build
 ```
 
-Isso sobe Postgres, pgAdmin e MLflow. O servico `web` nao sobe por padrao para nao disputar a porta `3000` com o Next rodando no Windows. O MLflow usa SQLite em `/mlflow/mlflow.db` dentro do volume `mlflow_data`, evitando o backend de arquivos antigo.
+Esse comando sobe Postgres, pgAdmin e MLflow. O servico `web` nao sobe por padrao para nao disputar a porta `3000` com o Next rodando no Windows.
 
 No terminal do Windows, na pasta do projeto:
 
@@ -54,14 +78,17 @@ URLs nesse fluxo:
 - pgAdmin: `http://localhost:5050`
 - Postgres: `localhost:5432`
 
-A configuracao local ja esta em `.env`:
+A configuracao local esperada em `.env` é:
 
 ```env
 DATABASE_URL="postgresql://stressia:stressia123@localhost:5432/stressia?schema=public"
 MLFLOW_MODEL_URL=http://localhost:8001
+JWT_SECRET="uma-senha-secreta-aqui"
 ```
 
-## Rodar tudo com Docker
+## Rodar Tudo com Docker
+
+Para subir tambem a aplicacao web dentro do Docker:
 
 ```bash
 docker compose --profile full up --build
@@ -75,21 +102,32 @@ Servicos:
 - pgAdmin: `http://localhost:5050`
 - Postgres: `localhost:5432`
 
-Na primeira subida, o container `mlflow` treina o modelo e grava o URI em `/mlflow/model_uri.txt` dentro do volume `mlflow_data`. Para forcar novo treino no WSL:
+## Treinar ou Retreinar o Modelo no Docker
+
+Na primeira subida, o container `mlflow` treina os modelos, registra os experimentos e grava o URI do melhor modelo em `/mlflow/model_uri.txt` dentro do volume `mlflow_data`.
+
+Para forcar novo treino no WSL:
 
 ```bash
 FORCE_RETRAIN=true docker compose up --build mlflow
 ```
 
-Se voce acabou de ver o erro `filesystem tracking backend ... is in maintenance mode`, pare o Compose com `Ctrl+C` e rode:
+Para uma rodada mais leve de teste:
 
 ```bash
-docker compose up --build --force-recreate mlflow
+TRAIN_REPEATS=3 SEARCH_ITERATIONS=4 FORCE_RETRAIN=true docker compose up --build mlflow
 ```
 
-Evite `docker compose down -v` se voce quiser preservar os dados do Postgres, porque esse comando remove todos os volumes do Compose.
+Variaveis uteis do treino:
 
-## Testar o modelo
+- `TRAIN_REPEATS`: numero de repeticoes do repeated holdout.
+- `CV_FOLDS`: numero de folds da validacao cruzada.
+- `SEARCH_ITERATIONS`: numero maximo de iteracoes das buscas aleatorias.
+- `LOO_MAX_ROWS`: limite de linhas para executar Leave-One-Out; use `0` para desativar.
+- `SKLEARN_N_JOBS`: paralelismo usado pelo scikit-learn.
+- `MODEL_FILTER`: lista opcional de modelos, por exemplo `knn,decision_tree,random_forest,adaboost`.
+
+## Testar o Modelo Servido pelo MLflow
 
 Com o Docker rodando:
 
@@ -117,9 +155,9 @@ Resposta esperada:
 {"predictions":[6.12]}
 ```
 
-O valor exato varia conforme o treino.
+O valor exato varia conforme o treino e o melhor modelo selecionado.
 
-## Treino local sem Docker
+## Treino Local sem Docker
 
 ```bash
 python -m venv .venv
@@ -141,7 +179,39 @@ $modelUri = Get-Content ml_service/model_uri.txt
 mlflow models serve --model-uri $modelUri --host 0.0.0.0 --port 8001 --env-manager local
 ```
 
-## Variaveis importantes
+## Compilar e Executar a Aplicacao Web
+
+Instale as dependencias:
+
+```powershell
+npm install
+```
+
+Aplique as migracoes do banco:
+
+```powershell
+npm run db:migrate
+```
+
+Rode em desenvolvimento:
+
+```powershell
+npm run dev
+```
+
+Gere o build de producao:
+
+```powershell
+npm run build
+```
+
+Execute o build:
+
+```powershell
+npm start
+```
+
+## Variaveis Importantes
 
 - `DATABASE_URL`: conexao do Prisma com Postgres.
 - `JWT_SECRET`: chave usada para assinar sessao.
