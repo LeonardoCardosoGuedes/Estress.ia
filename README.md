@@ -14,13 +14,13 @@ Google Sites do projeto: https://sites.google.com/d/1vyuxtBs6DBwLFJJjCeZ0BMbyBJB
 
 | Membro | Usuario no GitHub |
 | --- | --- |
-| daviruy61 | @daviruy61 |
-| apabs | @apabs |
-| helotanaka | @helotanaka |
-| lariisantos | @lariisantos |
-| jotapeans | @jotapeans |
-| LeonardoCardosoGuedes | @LeonardoCardosoGuedes |
-| ClaraMachadoAj | @ClaraMachadoAj |
+| Davi Gomes | @daviruy61 |
+| Antonio Paulo | @apabs |
+| Heloisa Tanaka | @helotanaka |
+| Larissa Sobrinho | @lariisantos |
+| João Pedro | @jotapeans |
+| Leonardo Cardoso | @LeonardoCardosoGuedes |
+| Clara Machado | @ClaraMachadoAj |
 
 ## Descricao da Solucao
 
@@ -56,7 +56,7 @@ Use este fluxo se o Docker esta no terminal WSL e o `npm` esta no terminal do Wi
 No WSL:
 
 ```bash
-cd /mnt/c/Users/davir/Desktop/Estress.ia
+cd //Estress.ia
 docker compose up --build
 ```
 
