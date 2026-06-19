@@ -2,7 +2,7 @@
 
 Estress.ia e uma aplicacao web para registrar habitos digitais e indicadores de descanso, prever nivel de estresse academico com aprendizado de maquina e apresentar alertas, metricas, graficos e recomendacoes em um dashboard interativo.
 
-Google Sites do projeto: https://sites.google.com/d/1vyuxtBs6DBwLFJJjCeZ0BMbyBJBTdmhB/p/1WpOHxx4JqBKabjMsSzKi_nCKchwLRTSj/edit
+Google Sites do projeto: https://sites.google.com/cesar.school/projetos6g6/in%C3%ADcio?pli=1&authuser=1
 
 ## Informacoes Academicas
 
